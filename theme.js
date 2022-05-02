@@ -3015,5 +3015,52 @@ export default () => {
         justifyContent: 'center',
       },
     },
+
+    'shoutem.ui.CategoryPicker': {
+      container: {
+        justifyContent: 'center',
+        backgroundColor: resolveVariable('paperColor'),
+      },
+      listContainer: {
+        backgroundColor: resolveVariable('paperColor'),
+        paddingHorizontal: getSizeRelativeToReference(
+          8,
+          375,
+          resolveVariable('sizes.window.width'),
+        ),
+        paddingVertical: getSizeRelativeToReference(
+          15,
+          375,
+          resolveVariable('sizes.window.width'),
+        ),
+      },
+      scrollView: {
+        height: getSizeRelativeToReference(
+          60,
+          812,
+          resolveVariable('sizes.window.height'),
+        ),
+      },
+    },
+  
+    'shoutem.ui.Category': {
+      container: {
+        marginHorizontal: getSizeRelativeToReference(
+          15,
+          375,
+          resolveVariable('sizes.window.width'),
+        ),
+      },
+      category: {
+        fontFamily: resolveFontFamily(resolveVariable('text.fontFamily'), '700'),
+        fontWeight: resolveFontWeight('700'),
+        letterSpacing: -0.165,
+        fontSize: 15,
+        lineHeight: 24,
+      },
+      selectedCategory: {
+        color: changeColorAlpha(resolveVariable('text.color'), 0.5),
+      },
+    },
   };
 };
