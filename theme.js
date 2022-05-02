@@ -3018,6 +3018,7 @@ export default () => {
 
     'shoutem.ui.CategoryPicker': {
       container: {
+        alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: resolveVariable('paperColor'),
       },
