@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { FlatList } from 'react-native';
+import { Animated, FlatList } from 'react-native';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { connectStyle } from '@shoutem/theme';
@@ -19,6 +19,7 @@ export function CategoryPicker({
   selectedCategory,
 }) {
   const listRef = useRef();
+  const scrollX = useRef(new Animated.Value(0)).current;
 
   // useEffect(() => {
   //   // Problem je jer se postavi ref na prvom renderu - ali nista onda ne triggera re-render
@@ -35,15 +36,26 @@ export function CategoryPicker({
   // }, [listRef]);
 
   const renderItem = useCallback(
-    ({ item: category }) => (
-      <Category
-        category={category}
-        key={category.id}
-        onPress={onCategorySelected}
-        isSelected={selectedCategory.id === category.id}
-      />
-    ),
-    [selectedCategory.id, onCategorySelected],
+    ({ index, item: category }) => {
+      // console.log(index)
+
+      const inputRange = [
+        -1, 0, 10 * index, 10 * (index + 2)
+      ];
+      const scale = scrollX.interpolate({inputRange, outputRange: [1,1,1,0]})
+      console.log(scrollX)
+
+      return (
+        <Animated.View style={{transform: [{scale}]}}>
+          <Category
+            category={category}
+            key={category.id}
+            onPress={onCategorySelected}
+            isSelected={selectedCategory.id === category.id}
+          />
+      </Animated.View>
+    )},
+    [selectedCategory.id, onCategorySelected]
   );
 
   if (_.size(categories) < 2) {
@@ -54,14 +66,15 @@ export function CategoryPicker({
 
   return (
     <View style={style.container}>
-      <FlatList
-        horizontal
+      <Animated.FlatList
+        data={categories}
+        renderItem={renderItem}
         ref={listRef}
+        horizontal
         scrollToOverflowEnabled
         contentContainerStyle={style.listContainer}
         showsHorizontalScrollIndicator={false}
-        data={categories}
-        renderItem={renderItem}
+        onScroll={Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], { useNativeDriver: true})}
       />
     </View>
   );
