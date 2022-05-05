@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Animated } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Animated, Dimensions, LayoutAnimation } from 'react-native';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { connectStyle } from '@shoutem/theme';
@@ -51,28 +51,58 @@ function Category({
       1,
     );
   }, [categoryDimensions, index]);
-  const currentItemWidth = useMemo(() => categoryDimensions[index] || 0, [
+  const itemWidth = useMemo(() => categoryDimensions[index] || 0, [
     categoryDimensions,
     index,
   ]); // 0 because of NaN error when multiplying with 0.5
 
+
+
+  const calculateInitialScale = useCallback(() => {
+    const screenWidth = Dimensions.get('screen').width;
+    const listWidth = screenWidth - 16; // paddings
+
+    if ((listWidth < requiredXoffset + 20)) {
+      return 0;
+    }
+
+    // If half of the item is outside the list (right side)
+    if (((requiredXoffset + itemWidth) - listWidth) > itemWidth * 0.5) {
+      return 0.6
+    }
+
+    if ((listWidth - requiredXoffset - 4) === itemWidth) {
+      return 0.9;
+    }
+
+   return 1
+  }, [index, itemWidth, requiredXoffset])
+
+  const screenWidth = Dimensions.get('screen').width;
+  const listWidth = screenWidth - 16; // paddings
+
+  
+
   const inputRange = [
-    -1, // Keep scale:1 if user tries to scroll in reverse direction & list is position: 0
+    -1,
     0,
     requiredXoffset,
-    requiredXoffset + 4,
-    requiredXoffset + 4 + currentItemWidth * 0.5,
-    requiredXoffset + 20 + currentItemWidth,
+    requiredXoffset + (index === 0 ? 4 : 30), // 0.9
+    requiredXoffset + 30 + itemWidth * 0.3, // 0.6
+    requiredXoffset + 30 + itemWidth * 0.8, // 0
   ];
 
   const scale = scrollX.interpolate({
     inputRange,
-    outputRange: [1, 1, 1, 0.9, 0.6, 0],
+    outputRange: [1, 1, 1, 0.9, 0.4, 0],
   });
+
   const opacity = scrollX.interpolate({
     inputRange,
-    outputRange: [1, 1, 1, 0.9, 0.6, 0],
+    outputRange: [1, 1, 1, 0.9, 0.4, 0],
   });
+
+
   const resolvedStyle = useMemo(
     () =>
       categoryDimensions[index] ? { opacity, transform: [{ scale }] } : {},

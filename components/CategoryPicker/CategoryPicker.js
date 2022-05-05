@@ -42,6 +42,10 @@ export function CategoryPicker({
     return null;
   }
 
+  function handleScroll(event) {
+    console.log(event.nativeEvent.contentOffset.x)
+  }
+
 
   return (
     <View style={style.container}>
@@ -52,10 +56,17 @@ export function CategoryPicker({
         scrollToOverflowEnabled
         contentContainerStyle={style.listContainer}
         showsHorizontalScrollIndicator={false}
+        scrollEventThrottle={10}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true },
-        )}
+          {listener: handleScroll},
+          { useNativeDriver: true }
+          )}
+          
+        // onScroll={Animated.event(
+        //   [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+        //   { useNativeDriver: true },
+        // )}
       />
     </View>
   );
